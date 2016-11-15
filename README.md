@@ -21,24 +21,27 @@ Nginx can then do the authentication of users and would handle SSL connections e
 Just add the following snippet to your Nginx' `/etc/nginx/conf.d/default.conf`:
 
     location / {
-                proxy_pass http://trac:80;
+                proxy_pass http://trac/;
                 proxy_pass_header Authorization;
+                proxy_redirect http://trac/ http://trac.binfalse.de/;
                 proxy_set_header REMOTE_USER $remote_user;
                 auth_basic "Restricted";
                 auth_basic_user_file htpasswd;
     }
 
-This requires htpasswd file in `/etc/nginx/htpasswd` and assumes that the tracd server runs at `http://trac:80`.
+This requires htpasswd file in `/etc/nginx/htpasswd` and assumes that the tracd server runs at `http://trac/`.
 If you just want the authentication for the login page change the above to
 
     location / {
                 proxy_pass http://trac:80;
                 proxy_pass_header Authorization;
                 proxy_set_header REMOTE_USER $remote_user;
+                proxy_redirect http://trac/ http://trac.binfalse.de/;
     }
     location ~ /login$ {
                 proxy_pass http://trac:80;
                 proxy_pass_header Authorization;
+                proxy_redirect http://trac/ http://trac.binfalse.de/;
                 proxy_set_header REMOTE_USER $remote_user;
                 auth_basic "Restricted";
                 auth_basic_user_file htpasswd;

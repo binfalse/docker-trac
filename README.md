@@ -28,6 +28,7 @@ Just add the following snippet to your Nginx' `/etc/nginx/conf.d/default.conf`:
                 auth_basic_user_file htpasswd;
     }
 
+This requires htpasswd file in `/etc/nginx/htpasswd` and assumes that the tracd server runs at `http://trac:80`.
 If you just want the authentication for the login page change the above to
 
     location / {
@@ -42,6 +43,51 @@ If you just want the authentication for the login page change the above to
                 auth_basic "Restricted";
                 auth_basic_user_file htpasswd;
     }
+
+
+## Docker Compose
+
+A Docker compose configuration for a **trac** container, and an **Nginx** container, and an **Nginx-Proxy** container may look like this:
+
+
+    version: '2'
+    services:
+        nginx-proxy:
+            restart: always
+            image: binfalse/nginx-proxy
+            ports:
+                - "80:80"
+                - "443:443"
+            volumes:
+                - /var/run/docker.sock:/tmp/docker.sock:ro
+                - /srv/web/certs:/etc/nginx/certs:ro
+            environment:
+                DEFAULT_HOST: binfalse.de
+        nginx-trac:
+            restart: always
+            image: nginx
+            volumes:
+                - /srv/docker/configs/nginx-site-trac.conf:/etc/nginx/conf.d/default.conf:ro
+                - /srv/repositories/trac/.htpasswd:/etc/nginx/htpasswd:ro
+            environment:
+                - VIRTUAL_HOST=trac.binfalse.de
+            links:
+                - trac
+        trac:
+            restart: always
+            image: binfalse/trac
+            volumes:
+                - /srv/repositories/trac/:/trac
+                - /srv/repositories/git/repositories/:/trac/git/:ro
+
+
+The above configuration expects:
+
+* SSL certificates in `/srv/web/certs`
+* The trac-Nginx configuration in `/srv/docker/configs/nginx-site-trac.conf` (see above on how to configure Nginx)
+* The htpasswd file in `/srv/repositories/trac/.htpasswd`
+* The trac repositories in `/srv/repositories/trac/projects`
+* The corresponding git repositories in `/srv/repositories/git/repositories/` (but that just depends on how you configure your trac environment)
 
 
 ## See Also

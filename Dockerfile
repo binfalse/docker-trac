@@ -6,7 +6,6 @@ RUN apt-get update \
  && apt-get install -y -q --no-install-recommends \
     trac \
     trac-accountmanager \
-    trac-announcer \
     trac-codecomments \
     trac-customfieldadmin \
     trac-mastertickets \

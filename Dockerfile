@@ -1,4 +1,4 @@
-FROM debian:testing
+FROM debian:stable
 MAINTAINER martin scharm
 
 # Install wget and install/updates certificates

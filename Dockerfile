@@ -12,6 +12,7 @@ RUN apt-get update \
     trac-navadd \
     trac-tags \
     trac-email2trac \
+    trac-xmlrpc \
     git-core \
     mercurial \
  && apt-get clean \
